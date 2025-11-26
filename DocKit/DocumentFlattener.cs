@@ -11,7 +11,7 @@ record struct PositionInfo(
     int LocalOffset
 );
 
-internal class DocumentFlattener
+internal static class DocumentFlattener
 {
     public record FlattenedDocument(
         string Text,

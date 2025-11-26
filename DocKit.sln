@@ -2,6 +2,8 @@
 Microsoft Visual Studio Solution File, Format Version 12.00
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DocKit", "DocKit\DocKit.csproj", "{C9E654C8-2D9C-44C1-B0CC-77DCD062D6A1}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DocKit.Test", "DocKit.Test\DocKit.Test.csproj", "{BDAAECAD-AAC3-4550-8869-1B40A9659B46}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -12,5 +14,9 @@ Global
 		{C9E654C8-2D9C-44C1-B0CC-77DCD062D6A1}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C9E654C8-2D9C-44C1-B0CC-77DCD062D6A1}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C9E654C8-2D9C-44C1-B0CC-77DCD062D6A1}.Release|Any CPU.Build.0 = Release|Any CPU
+		{BDAAECAD-AAC3-4550-8869-1B40A9659B46}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{BDAAECAD-AAC3-4550-8869-1B40A9659B46}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{BDAAECAD-AAC3-4550-8869-1B40A9659B46}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{BDAAECAD-AAC3-4550-8869-1B40A9659B46}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

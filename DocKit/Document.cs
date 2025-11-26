@@ -16,7 +16,7 @@ public enum DocumentType
 }
 
 
-public class Document: IDisposable
+public partial class Document: IDisposable
 {
     
     private static class FileExtensions
@@ -74,7 +74,7 @@ public class Document: IDisposable
     {
 
         if (File.Exists(path) == false)
-            throw new FileNotFoundException("File not found", path);
+            throw new FileNotFoundException($"File not found: '{path}'");
         
         String fileExtension = Path.GetExtension(path).ToLowerInvariant();
 
@@ -82,7 +82,7 @@ public class Document: IDisposable
         {
             FileExtensions.Document => DocumentType.ExistingDocument,
             FileExtensions.Template => DocumentType.Template,
-            _ => throw new NotSupportedException($"File type {fileExtension} is not supported.")
+            _ => throw new NotSupportedException($"File type '{fileExtension}' is not supported")
         };
 
         return new Document(path, type); 
@@ -103,11 +103,12 @@ public class Document: IDisposable
             throw new ArgumentNullException(nameof(path));
         
         string? directory = Path.GetDirectoryName(path);
-        if (!string.IsNullOrEmpty(directory) && !Directory.Exists(directory))
-            throw new DirectoryNotFoundException($"Directory not found: {directory}");
+        
+        if (string.IsNullOrEmpty(directory) || !Directory.Exists(directory))
+            throw new DirectoryNotFoundException($"Directory not found: '{directory}'");
         
         if (File.Exists(path))
-            throw new IOException($"File already exists: {path}"); 
+            throw new IOException($"File already exists: '{path}'"); 
         
         return new Document(path, DocumentType.NewDocument);
         
@@ -136,17 +137,6 @@ public class Document: IDisposable
         
     }
 
-    public void InsertText(string text)
-    {
-        Body.AppendChild(new Paragraph(new Run(new Text(text))));
-    }
-
-    public void EditCheckbox(string identifier, bool value)
-    {
-        
-        //CheckBox checkBox = CheckBox.Find(Body, identifier);
-        
-    }
 
     public void Save()
     {
