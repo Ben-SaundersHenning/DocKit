@@ -1,5 +1,17 @@
+using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Office2010.Word;
 using DocumentFormat.OpenXml.Wordprocessing;
+using Checked = DocumentFormat.OpenXml.Wordprocessing.Checked;
+
+// Structure of legacy:
+//FieldChar root; 
+//
+//FormFieldData checkBox parent;
+//
+//FormFieldName which is the identifier for the checkbox
+//CheckBox checkbox itself;
+//
+//Checked which is the value of the checkbox;
 
 namespace DocKit.Checkboxes;
 
@@ -14,22 +26,21 @@ public class Checkbox
 
     public string Identifier { get; }
 
-    private bool _value;
     public bool Value
     {
-        get => _value;
+        get;
         set
         {
-            _value = value;
-            // TODO: update checkbox state
+            field = value;
+            SetValue(value);
         }
     }
-    
+
     public CheckboxType Type { get; }
     
-    private CheckBox _legacyCheckbox;
+    private CheckBox? _legacyCheckbox;
     
-    private SdtContentCheckBox _modernCheckBox;
+    private SdtElement? _modernCheckBox;
 
     private Checkbox(string identifier, CheckboxType type, object checkbox)
     {
@@ -37,23 +48,104 @@ public class Checkbox
         Identifier = identifier;
         Type = type;
         
-        if (type == CheckboxType.Modern)
-            _modernCheckBox = (SdtContentCheckBox)checkbox;
-        else
-            _legacyCheckbox = (CheckBox)checkbox;
+        switch (type)
+        {
+            case CheckboxType.Modern:
+                _modernCheckBox = (SdtElement)checkbox;
+                break;
+            case CheckboxType.Legacy:
+                _legacyCheckbox = (CheckBox)checkbox;
+                break;
+            default:
+                throw new ArgumentException($"Checkboxes of type {type} are not supported");
+        } 
 
     }
 
-    // TODO: finish this.
-    //public static Checkbox Find(Body body, string identifier)
-    public static void Find(Body body, string identifier)
+    public static Checkbox Find(Body body, string identifier)
     {
         
-        // Look for modern, if found, return with modern
-        //var modern = body.Descendants<FormFieldName>()
-        //    .FirstOrDefault(field => field.Val.Value == identifier);
-        // Look for legacy, if found, return with legacy
-        // if not found, throw
+        // To find a modern checkbox:
+        //   1. look through all SdtContentCheckBox (w14:checkbox)
+        //   2. see if their parent, an SdtProperties (w14:sdtPr) has a child of type Tag (w:tag)
+        //   3. If the tag has a value that matches tag, it's the correct checkbox
+        SdtElement? modern = body.Descendants<SdtContentCheckBox>()
+            .Where(checkbox => checkbox.Parent?.GetFirstChild<Tag>()?.Val == identifier)
+            .Select(checkbox => checkbox.Ancestors<SdtElement>().FirstOrDefault())
+            .FirstOrDefault();
+
+        if (modern != null)
+            return new Checkbox(identifier, CheckboxType.Modern, modern);
+
+        // To find a legacy checkbox:
+        //   1. Look for a FormFieldName whose Val.Value is identifier (a string)
+        //   2. Return its sibling who is of type CheckBox
+        CheckBox? legacy = body.Descendants<FormFieldName>()
+            .Where(tag => tag.Val?.Value == identifier)
+            .Select(tag => tag.Parent?.GetFirstChild<CheckBox>())
+            .FirstOrDefault();
+        
+        if (legacy != null)
+            return new Checkbox(identifier, CheckboxType.Legacy, legacy);
+        
+        throw new ArgumentException($"Checkboxes with tag '{identifier}' was not found");
+
+    }
+
+    public static Checkbox Create(string identifier, bool value)
+    {
+        // TODO: create the checkbox (a SdtElement)
+        //return new Checkbox(identifier, CheckboxType.Modern, ); 
+        throw new NotImplementedException();
+    }
+
+    private void SetValue(bool value)
+    {
+        
+        if (Type ==  CheckboxType.Modern && _modernCheckBox != null)
+            SetValueModern(value);
+        else if (Type ==  CheckboxType.Legacy && _legacyCheckbox != null)
+            SetValueLegacy(value);
+        
+    }
+
+    private void SetValueModern(bool value)
+    {
+        SdtContentCheckBox? checkbox = _modernCheckBox?.Descendants<SdtContentCheckBox>().FirstOrDefault();
+        
+        if (checkbox == null)
+            // TODO: create the checkbox value
+            throw new NotImplementedException();
+        
+        checkbox.Checked?.Val = value ? OnOffValues.True : OnOffValues.False;
+        
+        Text? checkboxChar = _modernCheckBox?.Descendants<Text>().FirstOrDefault();
+        
+        if (checkboxChar == null) 
+            // TODO: create the content section
+            throw new NotImplementedException();
+
+        int unicode = value switch
+        {
+            true => int.Parse(checkbox.CheckedState?.Val?.Value ?? "2612", System.Globalization.NumberStyles.HexNumber),
+            _ => int.Parse(checkbox.UncheckedState?.Val?.Value ?? "2610", System.Globalization.NumberStyles.HexNumber)
+        };
+
+        checkboxChar.Text = unicode.ToString();
+
+    }
+
+    private void SetValueLegacy(bool value)
+    {
+        
+        Checked? state = _legacyCheckbox?.GetFirstChild<Checked>();
+        
+        if (state == null)
+            // TODO: create the checkbox value
+            throw new NotImplementedException();
+
+        state.Val = new OnOffValue(value);
+
     }
     
     //private void EditLegacyCheckbox(string tag, bool newState)
@@ -80,8 +172,10 @@ public class Checkbox
 
     //private void EditCheckbox(string tag, bool newState)
     //{
+    //        
     //    foreach (SdtContentCheckBox cb in Body!.Descendants<SdtContentCheckBox>())
     //    {
+    //        
 
     //        SdtProperties properties = (SdtProperties)cb.Parent;
     //        SdtRun parent = (SdtRun)properties.Parent;
