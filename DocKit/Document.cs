@@ -148,11 +148,9 @@ public partial class Document: IDisposable
         
         WorkingDoc.Seek(0, SeekOrigin.Begin);
 
-        using (FileStream fs = new FileStream(DocPath, FileMode.Create, FileAccess.Write))
-        {
-            WorkingDoc.CopyTo(fs);
-        }
-
+        using FileStream fs = new FileStream(DocPath, FileMode.Create, FileAccess.Write);
+        WorkingDoc.CopyTo(fs);
+        
     }
 
     public void SaveAs(string path)

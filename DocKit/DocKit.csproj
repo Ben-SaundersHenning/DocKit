@@ -7,7 +7,6 @@
     </PropertyGroup>
 
     <ItemGroup>
-      <Folder Include="SearchReplaceEngine\" />
       <Folder Include="TemplateEngine\" />
     </ItemGroup>
 

@@ -95,6 +95,9 @@ public class Checkbox
     public static Checkbox Create(string identifier, bool value)
     {
         // TODO: create the checkbox (a SdtElement)
+        var element = new SdtRun();
+        var paramss = new SdtProperties();
+        var box = new SdtContentCheckBox();
         //return new Checkbox(identifier, CheckboxType.Modern, ); 
         throw new NotImplementedException();
     }

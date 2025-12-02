@@ -1,4 +1,6 @@
-﻿namespace DocKit.Test;
+﻿using DocKit.Images;
+
+namespace DocKit.Test;
 
 using DocKit;
 
@@ -12,6 +14,79 @@ public class DocumentTest
         Document doc = Document.Create("/tmp/test_doc.docx");
 
         Assert.NotNull(doc);
+
+    }
+    
+    [Fact]
+    public void Save_Document()
+    {
+        
+        File.Delete("/tmp/test_doc.docx"); 
+
+        Document doc = Document.Create("/tmp/test_doc.docx");
+        
+        Assert.NotNull(doc);
+        
+        doc.Save();
+        
+        Assert.True(File.Exists(Path.GetFullPath("/tmp/test_doc.docx")));
+
+    }
+    
+    [Fact]
+    public void Save_NotEmptyDocument()
+    {
+        
+        File.Delete("/tmp/test_doc.docx"); 
+
+        Document doc = Document.Create("/tmp/test_doc.docx");
+        
+        Assert.NotNull(doc);
+        
+        doc.AppendText("Hello World!");
+        
+        doc.Save();
+        
+        Assert.True(File.Exists(Path.GetFullPath("/tmp/test_doc.docx")));
+
+    }
+    
+    [Fact]
+    public void Save_WithImage()
+    {
+        
+        File.Delete("/tmp/test_doc.docx"); 
+
+        Document doc = Document.Create("/tmp/test_doc.docx");
+        
+        Assert.NotNull(doc);
+        
+        doc.AppendImage(Path.GetFullPath("../../../../Documents_Testing/image.png"));
+        
+        doc.Save();
+        
+        Assert.True(File.Exists(Path.GetFullPath("/tmp/test_doc.docx")));
+
+    }
+    
+    [Fact]
+    public void Save_WithScaledImage()
+    {
+        
+        File.Delete("/tmp/test_doc.docx"); 
+
+        Document doc = Document.Create("/tmp/test_doc.docx");
+        
+        Assert.NotNull(doc);
+
+        Image image = new Image(Path.GetFullPath("../../../../Documents_Testing/image.png"));
+        image.FitToBounds(2, 2);
+        
+        doc.AppendImage(image);
+        
+        doc.Save();
+        
+        Assert.True(File.Exists(Path.GetFullPath("/tmp/test_doc.docx")));
 
     }
     
