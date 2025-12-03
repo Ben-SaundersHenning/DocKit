@@ -2,7 +2,6 @@ using System.Text.RegularExpressions;
 using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Wordprocessing;
-using Checkbox = DocKit.Checkboxes.Checkbox;
 
 #pragma warning disable CS8618 // Non-nullable field must contain a non-null value when exiting constructor. Consider adding the 'required' modifier or declaring as nullable.
 
@@ -33,8 +32,6 @@ public partial class Document: IDisposable
     
     private uint AltChunkCount { get; set; }
     
-    private Regex Matcher { get; init; }
-    
     public DocumentType DocumentType { get; set; }
     
     private WordprocessingDocument Doc { get; set; }
@@ -54,9 +51,6 @@ public partial class Document: IDisposable
         DirPath = Path.GetDirectoryName(DocPath)!;
         AltChunkCount = 0;
         
-        Matcher = new Regex(
-            @"<<(?<tagtype>if|/if|image|doc|logic||) *\[(?<operand>[ \w\[\]\\/._-]{3,})\](?<flags>[ \w\[\]\\/.:_-]*)>>|<<(?<tagtype>/if)>>",
-            RegexOptions.Compiled);
 
         if (DocumentType == DocumentType.NewDocument)
         {
