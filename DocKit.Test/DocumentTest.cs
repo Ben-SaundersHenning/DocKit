@@ -3,6 +3,7 @@
 namespace DocKit.Test;
 
 using DocKit;
+using DocKit.TemplateEngine;
 
 public class DocumentTest
 {
@@ -89,6 +90,25 @@ public class DocumentTest
         Assert.True(File.Exists(Path.GetFullPath("/tmp/test_doc.docx")));
 
     }
+
+    //[Fact]
+    //public void IsolateTag()
+    //{
+    //    
+    //    File.Delete("/tmp/test_doc.docx"); 
+
+    //    Document doc = Document.Open("/home/ben/Projects/dockit/Documents_Testing/template_engine/tags.docx");
+    //    
+    //    Assert.NotNull(doc);
+
+    //    TemplateEngine eng = new TemplateEngine();
+    //    eng.RunEngine(doc, null);
+    //    
+    //    doc.SaveAs("/tmp/test_doc.docx");
+    //    
+    //    Assert.True(File.Exists(Path.GetFullPath("/tmp/test_doc.docx")));
+    //    
+    //}
     
     [Fact]
     public void Create_Null()

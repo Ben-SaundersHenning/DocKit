@@ -55,17 +55,17 @@ internal class MatchIsolator
     
     private AffectedNodes GetAffectedNodes(Match match, List<PositionInfo> positionMap)
     {
-        HashSet<Text> texts = new();
-        HashSet<Run> runs = new();
-        HashSet<Paragraph> paragraphs = new();
+        HashSet<Text> texts = [];
+        //HashSet<Run> runs = new();
+        //HashSet<Paragraph> paragraphs = new();
         
         // Record every node which is 'linked' to the match
         for (int pos = match.Index; pos <= match.EndIndex; pos++)
         {
             PositionInfo info = positionMap[pos];
             texts.Add(info.TextNode);
-            runs.Add(info.RunNode);
-            paragraphs.Add(info.ParagraphNode);
+            //runs.Add(info.RunNode);
+            //paragraphs.Add(info.ParagraphNode);
         }
         
         PositionInfo firstInfo = positionMap[match.Index];
@@ -82,8 +82,6 @@ internal class MatchIsolator
     {
         
         Run newRun = new Run();
-        
-        newRun.SetAttribute(new OpenXmlAttribute());
         
         // Clone formatting from first run
         if (affected.FirstRun.RunProperties != null)
@@ -180,9 +178,18 @@ internal class MatchIsolator
                     (RunProperties)parentRun.RunProperties.CloneNode(true);
             }
             
-            newRun.AppendChild(new Text(suffix));
+            Text suffixText = new Text(suffix)
+            {
+                Space = SpaceProcessingModeValues.Preserve
+            };
+
+            newRun.AppendChild(suffixText);
             parentRun?.InsertAfterSelf(newRun);
         }
+        
+        // Keep spaces
+        text.Space = SpaceProcessingModeValues.Preserve;
+        
     }
     
     private void InsertRun(Run newRun, AffectedNodes affected)

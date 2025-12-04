@@ -38,7 +38,7 @@ public partial class Document: IDisposable
     
     private MainDocumentPart MainPart { get; set; }
     
-    private Body Body { get; set; }
+    internal Body Body { get; set; }
 
     public Document(string path, DocumentType documentType)
     {
@@ -111,7 +111,9 @@ public partial class Document: IDisposable
     private void InitializeExistingDocument()
     { 
         
-        WorkingDoc = new MemoryStream(File.ReadAllBytes(DocPath));
+        //WorkingDoc = new MemoryStream(File.ReadAllBytes(DocPath));
+        WorkingDoc = new MemoryStream();
+        WorkingDoc.Write(File.ReadAllBytes(DocPath));
         Doc = WordprocessingDocument.Open(WorkingDoc, true);
         
         MainPart = Doc.MainDocumentPart ?? Doc.AddMainDocumentPart();
@@ -142,7 +144,7 @@ public partial class Document: IDisposable
         
         WorkingDoc.Seek(0, SeekOrigin.Begin);
 
-        using FileStream fs = new FileStream(DocPath, FileMode.Create, FileAccess.Write);
+        using FileStream fs = new FileStream(DocPath, FileMode.Create, FileAccess.ReadWrite);
         WorkingDoc.CopyTo(fs);
         
     }
@@ -150,7 +152,7 @@ public partial class Document: IDisposable
     public void SaveAs(string path)
     {
         
-        if (string.IsNullOrWhiteSpace(DocPath))
+        if (string.IsNullOrWhiteSpace(path))
             throw new ArgumentNullException(nameof(path));
         
         string? directory = Path.GetDirectoryName(path);
