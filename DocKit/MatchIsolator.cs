@@ -5,24 +5,20 @@ using DocKit.Utility;
 
 namespace DocKit;
 
-internal class MatchIsolator
+internal static class MatchIsolator
 {
-    private readonly Body _body;
-    private readonly Regex _tagPattern;
     
-    public MatchIsolator(Body body, Regex matchPattern)
+    public static void IsolateAllTags(Document doc, Regex matchPattern)
     {
-        _body = body;
-        _tagPattern = matchPattern;
-    }
-    
-    public void IsolateAllTags()
-    {
+        
+        Body body = doc.Body;
+        Regex tagPattern = matchPattern;
+        
         // 1. Flatten
-        var flattened = DocumentFlattener.Flatten(_body);
+        var flattened = DocumentFlattener.Flatten(body);
         
         // 2. Find all tag matches
-        MatchCollection matches = _tagPattern.Matches(flattened.Text);
+        MatchCollection matches = tagPattern.Matches(flattened.Text);
         
         if (matches.Count == 0)
             return;
@@ -35,10 +31,10 @@ internal class MatchIsolator
         }
         
         // 4. Cleanup
-        CleanupEmptyNodes();
+        CleanupEmptyNodes(body);
     }
     
-    private void IsolateTag(Match match, List<PositionInfo> positionMap)
+    private static void IsolateTag(Match match, List<PositionInfo> positionMap)
     {
         // Find the nodes which will be affected by the isolation
         var affectedNodes = GetAffectedNodes(match, positionMap);
@@ -53,7 +49,7 @@ internal class MatchIsolator
         InsertRun(newRun, affectedNodes);
     }
     
-    private AffectedNodes GetAffectedNodes(Match match, List<PositionInfo> positionMap)
+    private static AffectedNodes GetAffectedNodes(Match match, List<PositionInfo> positionMap)
     {
         HashSet<Text> texts = [];
         //HashSet<Run> runs = new();
@@ -78,7 +74,7 @@ internal class MatchIsolator
         );
     }
     
-    private Run CreateIsolatedRun(Match match, AffectedNodes affected)
+    private static Run CreateIsolatedRun(Match match, AffectedNodes affected)
     {
         
         Run newRun = new Run();
@@ -96,7 +92,7 @@ internal class MatchIsolator
             "tmplTag", "isTag", "jstg", "true"));
         
         //Note: to find a tag with the 'isTag' Attribute, do
-        //var taggedRuns = _body.Descendants<Run>()
+        //var taggedRuns = body.Descendants<Run>()
         //    .Where(r => r.GetAttribute("isTag", "jstg")?.Value == "true")
         //    .ToList();
         
@@ -106,7 +102,7 @@ internal class MatchIsolator
         return newRun;
     }
     
-    private void RemoveTagFromOriginalNodes(
+    private static void RemoveTagFromOriginalNodes(
         Match match, 
         AffectedNodes affected, 
         List<PositionInfo> positionMap)
@@ -134,7 +130,7 @@ internal class MatchIsolator
     // localStart: where the match starts in the text node
     // localEnd: where the match ends in the text node
     // This function removes the match from the text
-    private void ModifyTextNode(Text text, int localStart, int localEnd)
+    private static void ModifyTextNode(Text text, int localStart, int localEnd)
     {
         int textLength = text.Text.Length;
         
@@ -192,13 +188,13 @@ internal class MatchIsolator
         
     }
     
-    private void InsertRun(Run newRun, AffectedNodes affected)
+    private static void InsertRun(Run newRun, AffectedNodes affected)
     {
         // Insert after the first affected run
         affected.FirstRun.InsertAfterSelf(newRun);
     }
     
-    private int FindFirstPosition(Text text, List<PositionInfo> positionMap)
+    private static int FindFirstPosition(Text text, List<PositionInfo> positionMap)
     {
         for (int i = 0; i < positionMap.Count; i++)
         {
@@ -208,10 +204,10 @@ internal class MatchIsolator
         return -1;
     }
     
-    private void CleanupEmptyNodes()
+    private static void CleanupEmptyNodes(Body body)
     {
         // Remove empty Text nodes
-        var emptyTexts = _body.Descendants<Text>()
+        var emptyTexts = body.Descendants<Text>()
             .Where(t => string.IsNullOrEmpty(t.Text))
             .ToList();
         
@@ -221,7 +217,7 @@ internal class MatchIsolator
         }
         
         // Remove empty Runs
-        var emptyRuns = _body.Descendants<Run>()
+        var emptyRuns = body.Descendants<Run>()
             .Where(r => !r.Descendants<Text>().Any() || 
                         r.Descendants<Text>().All(t => string.IsNullOrEmpty(t.Text)))
             .ToList();

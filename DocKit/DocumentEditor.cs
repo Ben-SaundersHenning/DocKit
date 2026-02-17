@@ -18,9 +18,9 @@ public partial class Document
         Body.AppendChild(new Paragraph(run));
     }
 
-    public void AppendImage(Image image)
+    private Drawing CreateImagePart(Image image)
     {
-
+        
         // adds an image part to the document
         ImagePart imagePart = MainPart.AddImagePart(DrawingUtils.GetImagePartType(image));
         
@@ -32,6 +32,15 @@ public partial class Document
         
         // creates a drawing element
         Drawing drawing = image.CreateDrawingElement(_imageCounter++, MainPart.GetIdOfPart(imagePart));
+
+        return drawing;
+
+    }
+
+    public void AppendImage(Image image)
+    {
+        
+        Drawing drawing = CreateImagePart(image);
         
         // then insert the drawing into the document
         var run = new Run(drawing)
@@ -46,6 +55,15 @@ public partial class Document
     {
         Image image = new Image(filePath);
         AppendImage(image);
+    }
+
+    internal void AddImage(Image image, Run imageParent)
+    {
+        
+        Drawing drawing = CreateImagePart(image);
+        
+        imageParent.AppendChild(drawing);
+        
     }
 
 

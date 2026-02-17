@@ -91,24 +91,47 @@ public class DocumentTest
 
     }
 
-    //[Fact]
-    //public void IsolateTag()
-    //{
-    //    
-    //    File.Delete("/tmp/test_doc.docx"); 
+    [Fact]
+    public void IsolateTag()
+    {
+        
+        File.Delete("/tmp/test_doc.docx"); 
 
-    //    Document doc = Document.Open("/home/ben/Projects/dockit/Documents_Testing/template_engine/tags.docx");
-    //    
-    //    Assert.NotNull(doc);
+        Document doc = Document.Open("/home/ben/Projects/dockit/Documents_Testing/template_engine/tags.docx");
+        
+        Assert.NotNull(doc);
 
-    //    TemplateEngine eng = new TemplateEngine();
-    //    eng.RunEngine(doc, null);
-    //    
-    //    doc.SaveAs("/tmp/test_doc.docx");
-    //    
-    //    Assert.True(File.Exists(Path.GetFullPath("/tmp/test_doc.docx")));
-    //    
-    //}
+        TemplateEngine eng = new TemplateEngine();
+        eng.RunEngine(doc, null);
+        
+        string savePath = "/tmp/test_doc.docx";
+        
+        doc.SaveAs(savePath);
+        
+        Assert.True(File.Exists(Path.GetFullPath("/tmp/test_doc.docx")));
+        
+    }
+
+    [Fact]
+    public void SimpleReplacementProcessing()
+    {
+        
+        File.Delete("/tmp/test_doc.docx"); 
+
+        Document doc = Document.Open("/home/ben/Projects/dockit/Documents_Testing/template_engine/tags.docx");
+        
+        Assert.NotNull(doc);
+
+        TemplateEngine eng = new TemplateEngine();
+        eng.RunEngine(doc, ReplaceFunc);
+        
+        string savePath = "/tmp/test_doc.docx";
+        
+        doc.SaveAs(savePath);
+        
+        Assert.True(File.Exists(Path.GetFullPath("/tmp/test_doc.docx")));
+        
+    }
     
     [Fact]
     public void Create_Null()
@@ -181,6 +204,11 @@ public class DocumentTest
         var exception = Assert.Throws<FileNotFoundException>(() => Document.Open("/home/ben/Projects/dockit/DocKit.Test/documents/DONOTCREATE.docx"));
         Assert.Equal("File not found: '/home/ben/Projects/dockit/DocKit.Test/documents/DONOTCREATE.docx'", exception.Message);
         
+    }
+
+    private string ReplaceFunc(string operand)
+    {
+        return "THIS IS A REPLACEMENT";
     }
         
 }

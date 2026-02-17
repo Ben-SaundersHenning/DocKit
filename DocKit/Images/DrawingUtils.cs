@@ -9,6 +9,7 @@ public static class DrawingUtils
     {
         public const string  Png = ".png";
         public const string Jpeg = ".jpeg";
+        public const string Jpg = ".jpg";
         public const string Gif = ".gif";
         public const string Bmp = ".bmp";
         public const string Tiff = ".tiff";
@@ -21,6 +22,7 @@ public static class DrawingUtils
         {
             FileExtensions.Png => ImagePartType.Png,
             FileExtensions.Jpeg => ImagePartType.Jpeg,
+            FileExtensions.Jpg => ImagePartType.Jpeg,
             FileExtensions.Gif => ImagePartType.Gif,
             FileExtensions.Bmp => ImagePartType.Bmp,
             FileExtensions.Tiff => ImagePartType.Tiff,
