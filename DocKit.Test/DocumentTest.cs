@@ -118,7 +118,7 @@ public class DocumentTest
         
         File.Delete("/tmp/test_doc.docx"); 
 
-        Document doc = Document.Open("/home/ben/Projects/dockit/Documents_Testing/template_engine/tags.docx");
+        Document doc = Document.Open("/Users/ben/Projects/DocKit/Documents_Testing/template_engine/tags.docx");
         
         Assert.NotNull(doc);
 
@@ -208,7 +208,7 @@ public class DocumentTest
 
     private string ReplaceFunc(string operand)
     {
-        return "THIS IS A REPLACEMENT";
+        return operand.Contains("do") ? "2023-05-26" : "[this WAS lower AND upper CASE alternating]";
     }
         
 }

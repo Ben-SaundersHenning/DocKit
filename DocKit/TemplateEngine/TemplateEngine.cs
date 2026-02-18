@@ -6,7 +6,7 @@ namespace DocKit.TemplateEngine;
 public partial class TemplateEngine
 {
 
-   [GeneratedRegex(@"<<(?<tagtype>if|/if|image|doc|logic||) *\[(?<operand>[ \w\[\]\\/._-]{3,})\](?<flags>[ \w\[\]\\/.:_-]*)>>|<<(?<tagtype>/if)>>", RegexOptions.Compiled)]
+   [GeneratedRegex(@"<<(?<tagtype>if|/if|image|doc|logic||) *\[(?<operand>[ \w\[\]\\/._-]{3,})\](?<flags>[ \w\[\]\\/.=:_-]*)>>|<<(?<tagtype>/if)>>", RegexOptions.Compiled)]
    private static partial Regex MyRegex();
    
 
@@ -15,11 +15,8 @@ public partial class TemplateEngine
    {
       
       
-      // TODO: this should be done prior
       // 1. Isolate all the matches
-      //MatchIsolator isolator = new MatchIsolator(document.Body, Matcher);
       MatchIsolator.IsolateAllTags(document, MyRegex());
-      //isolator.IsolateAllTags();
 
       // 2. Call the tag processor, process the tags
       TagProcessor processor = new TagProcessor(document);

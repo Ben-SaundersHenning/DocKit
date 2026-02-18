@@ -41,29 +41,80 @@ internal class TagProcessor(Document document)
                     Console.Error.WriteLine("end if not implemented");
                     continue;
                 
+                // action
                 case "image":
                     // TODO: check if operand is a valid image path
                     Image image = new Image(operand);
-                    image.FitToBounds(2, 2);
+                    
+                    if (parsedFlags.TryGetValue("width", out var width) && parsedFlags.TryGetValue("height", out var height))
+                    {
+                        image.FitToBounds(double.Parse(width), double.Parse(height));
+                    }
+                    
                     document.AddImage(image, r);
                     text.Remove();
                     continue;
                 
+                // action
                 case "doc":
                     Console.Error.WriteLine("doc not implemented");
                     continue;
                 
-                default: // regular tag
-                    Console.WriteLine("regular");
+                // value
+                default: // regular tag, search and replace
+                    string replacement = getReplacementString(operand);
+                    string resolved = ApplyFlags(parsedFlags, replacement);
+                    text.Text = resolved;
+                    break;
+                
+            }
+
+        }
+        
+    }
+
+    
+    /*
+     * :upper
+     * :lower
+     * :f=yyyy-mm
+     */
+    private static string ApplyFlags(Dictionary<string, string> flags, string replacement)
+    {
+        
+        foreach (var flag in flags)
+        {
+            
+            switch (flag.Key.ToLowerInvariant())
+            {
+                
+                case "f": // date format
+                    
+                    if (DateTime.TryParse(replacement, out var dt))
+                        try
+                        {
+                            replacement = dt.ToString(flag.Value);
+                        }
+                        catch (FormatException fe)
+                        {
+                            // TODO: handle this exception
+                        }
+                    break;
+                
+                case "upper":
+                    
+                    replacement = replacement.ToUpperInvariant();
+                    break;
+                
+                case "lower":
+                    replacement = replacement.ToLowerInvariant();
                     break;
                 
             }
             
-            // Regular tag, just a search and replace
-            string replacement = getReplacementString(operand);
-            text.Text = replacement;
-
         }
+        
+        return replacement;
         
     }
 
