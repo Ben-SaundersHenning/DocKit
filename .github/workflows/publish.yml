@@ -1,0 +1,42 @@
+# 1. The Name of your Robot
+name: Publish NuGet Package
+
+# 2. The Trigger: When should this robot wake up?
+on:
+  push:
+    branches: [ main ] # Only run when code is pushed to the 'main' branch
+
+# 3. Permissions: What is this robot allowed to do?
+permissions:
+  contents: read    # Needs to read your code to build it
+  packages: write  # Needs permission to upload the NuGet package
+
+# 4. The Jobs: The actual work to be done
+jobs:
+  publish:
+    runs-on: ubuntu-latest # The type of "clean computer" to use
+
+    steps:
+      # Step A: Download your code onto the clean computer
+      - name: Checkout Code
+        uses: actions/checkout@v4
+
+      # Step B: Install the .NET SDK
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '10.0.x' # Use the version you're developing with
+          # This automatically creates a temporary nuget.config for the robot
+          source-url: https://nuget.pkg.github.com/${{ github.repository_owner }}/index.json
+        env:
+          # Use the BUILT-IN token provided by GitHub Actions (no PAT needed!)
+          NUGET_AUTH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # Step C: Turn the code into a package (.nupkg)
+      - name: Pack Library
+        run: dotnet pack DocKit/DockKit.csproj --configuration Release
+
+      # Step D: Upload to the GitHub Feed
+      - name: Push to GitHub Packages
+        # This push uses the 'source-url' and 'NUGET_AUTH_TOKEN' defined in Step B
+        run: dotnet nuget push DockKit/bin/Release/*.nupkg --source "github" --skip-duplicate

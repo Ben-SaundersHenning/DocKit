@@ -6,6 +6,13 @@
         <Nullable>enable</Nullable>
     </PropertyGroup>
 
+    <PropertyGroup>
+      <PackageId>DocKit</PackageId>
+      <Version>0.1.0</Version>
+      <RepositoryUrl>https://github.com/Ben-SaundersHenning/DocKit</RepositoryUrl>
+      <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    </PropertyGroup>
+
     <ItemGroup>
       <PackageReference Include="DocumentFormat.OpenXml" Version="3.3.0" />
       <PackageReference Include="SkiaSharp" Version="3.119.2-preview.1" />
