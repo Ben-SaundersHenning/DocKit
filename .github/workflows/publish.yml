@@ -34,9 +34,9 @@ jobs:
 
       # Step C: Turn the code into a package (.nupkg)
       - name: Pack Library
-        run: dotnet pack DocKit/DockKit.csproj --configuration Release
+        run: dotnet pack DocKit/DocKit.csproj --configuration Release
 
       # Step D: Upload to the GitHub Feed
       - name: Push to GitHub Packages
         # This push uses the 'source-url' and 'NUGET_AUTH_TOKEN' defined in Step B
-        run: dotnet nuget push DockKit/bin/Release/*.nupkg --source "github" --skip-duplicate
+        run: dotnet nuget push DocKit/bin/Release/*.nupkg --source "github" --skip-duplicate
